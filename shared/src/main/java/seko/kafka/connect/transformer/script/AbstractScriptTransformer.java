@@ -15,13 +15,13 @@ import static seko.kafka.connect.transformer.script.configs.Configuration.KEY_SC
 import static seko.kafka.connect.transformer.script.configs.Configuration.VALUE_SCRIPT_CONFIG;
 
 public abstract class AbstractScriptTransformer<R extends ConnectRecord<R>> implements Transformation<R>, Transform {
-    private static final String PURPOSE = "field extraction";
+    protected static final String PURPOSE = "field extraction";
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
             .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for value transformation");
 
-    private String valueScript;
-    private String keyScript;
+    protected String valueScript;
+    protected String keyScript;
 
     @Override
     public R apply(R record) {
