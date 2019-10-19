@@ -1,4 +1,4 @@
-package seko.kafka.connect.transformer.python;
+package seko.kafka.connect.transformer.js;
 
 import org.apache.kafka.connect.connector.ConnectRecord;
 import org.slf4j.Logger;

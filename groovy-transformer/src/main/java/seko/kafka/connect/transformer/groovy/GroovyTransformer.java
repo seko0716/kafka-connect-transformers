@@ -1,4 +1,4 @@
-package seko.kafka.connect.transformer.python;
+package seko.kafka.connect.transformer.groovy;
 
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;

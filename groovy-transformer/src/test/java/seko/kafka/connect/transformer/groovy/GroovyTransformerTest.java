@@ -1,4 +1,4 @@
-package seko.kafka.connect.transformer.python;
+package seko.kafka.connect.transformer.groovy;
 
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.util.Requirements;

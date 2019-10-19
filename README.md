@@ -5,6 +5,56 @@ supported languages:
 * JavaScript
 * Python
 
+# Configuration
+
+## Examples:
+
+### groovy
+```json
+{
+  "transforms": "groovyTransform",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
+  "transforms.groovyTransform.key.script": "source.put('qweqweq', 12312312); return source;",
+  "transforms.groovyTransform.value.script": "source.put('qweqweq', 12312312); return source;"
+}
+```
+
+```json
+{
+  "transforms": "groovyTransform",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
+  "transforms.groovyTransform.key.script": "source.put('qweqweq', 12312312); return source;",
+}
+```
+
+```json
+{
+  "transforms": "groovyTransform",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
+  "transforms.groovyTransform.value.script": "source.put('qweqweq', 12312312); return source;"
+}
+```
+
+### python
+```json
+{
+  "transforms": "pythonTransform",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.python.PythonTransformer",
+  "transforms.groovyTransform.key.script": "source['qweqweq'] = 12312312; source",
+  "transforms.groovyTransform.value.script": "source['qweqweq'] = 12312312; source"
+}
+```
+
+### java script
+```json
+{
+  "transforms": "jsTransform",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.js.JavaScriptTransformer",
+  "transforms.groovyTransform.key.script": "source.qweqweq = 12312312; source;",
+  "transforms.groovyTransform.value.script": "source.qweqweq = 12312312; source;"
+}
+```
+
 # JMH results
 
 ###### JMH version: 1.21

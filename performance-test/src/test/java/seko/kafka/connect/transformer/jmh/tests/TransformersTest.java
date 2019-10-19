@@ -4,8 +4,8 @@ package seko.kafka.connect.transformer.jmh.tests;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.openjdk.jmh.annotations.*;
-import seko.kafka.connect.transformer.python.GroovyTransformer;
-import seko.kafka.connect.transformer.python.JavaScriptTransformer;
+import seko.kafka.connect.transformer.groovy.GroovyTransformer;
+import seko.kafka.connect.transformer.js.JavaScriptTransformer;
 import seko.kafka.connect.transformer.python.PythonTransformer;
 import seko.kafka.connect.transformer.script.configs.Configuration;
 
