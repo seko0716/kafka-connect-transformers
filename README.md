@@ -144,7 +144,7 @@ Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.pythonTransfor
 
 ##### Run complete. Total time: 00:10:06
 
-###REMEMBER: 
+### REMEMBER: 
 The numbers below are just data. To gain reusable insights, you need to follow up on
 why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
 experiments, perform baseline and negative tests that provide experimental control, make sure
