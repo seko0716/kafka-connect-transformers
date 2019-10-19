@@ -1,11 +1,11 @@
-package seko.kafka.connect.transformer.groovy;
+package seko.kafka.connect.transformer.python;
 
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import seko.kafka.connect.transformer.groovy.configs.Configuration;
+import seko.kafka.connect.transformer.python.configs.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
