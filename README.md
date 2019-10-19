@@ -50,8 +50,8 @@ supported languages:
 {
   "transforms": "jsTransform",
   "transforms.groovyTransform.type": "seko.kafka.connect.transformer.js.JavaScriptTransformer",
-  "transforms.groovyTransform.key.script": "source.qweqweq = 12312312; source;",
-  "transforms.groovyTransform.value.script": "source.qweqweq = 12312312; source;"
+  "transforms.groovyTransform.key.script": "function keyTransform(source){ source.qweqweq = 12312312; return source;}",
+  "transforms.groovyTransform.value.script": "function valueTransform(source){ source.qweqweq = 12312312; return source;}"
 }
 ```
 
@@ -70,19 +70,19 @@ supported languages:
 ###### Parameters: (N = 10000000)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovyTransformer":
-  442.675 ±(99.9%) 1.631 ns/op [Average]
-  (min, avg, max) = (440.508, 442.675, 444.009), stdev = 1.079
-  CI (99.9%): [441.044, 444.306] (assumes normal distribution)
+  - 442.675 ±(99.9%) 1.631 ns/op [Average]
+  - (min, avg, max) = (440.508, 442.675, 444.009), stdev = 1.079s
+  - CI (99.9%): [441.044, 444.306] (assumes normal distribution)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.jsTransformer":
-  1577617.798 ±(99.9%) 78341.136 ns/op [Average]
-  (min, avg, max) = (1465677.763, 1577617.798, 1652716.223), stdev = 51817.811
-  CI (99.9%): [1499276.661, 1655958.934] (assumes normal distribution)
+  - 150.457 ±(99.9%) 11.876 ns/op [Average]
+  - (min, avg, max) = (140.812, 150.457, 166.440), stdev = 7.856
+  - CI (99.9%): [138.580, 162.333] (assumes normal distribution)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.pythonTransformer":
-  1321.100 ±(99.9%) 13.768 ns/op [Average]
-  (min, avg, max) = (1309.414, 1321.100, 1332.275), stdev = 9.106
-  CI (99.9%): [1307.332, 1334.867] (assumes normal distribution)
+  - 1321.100 ±(99.9%) 13.768 ns/op [Average]
+  - (min, avg, max) = (1309.414, 1321.100, 1332.275), stdev = 9.106
+  - CI (99.9%): [1307.332, 1334.867] (assumes normal distribution)
 
 
 ##### Run complete. Total time: 00:10:06
@@ -99,7 +99,7 @@ Do not assume the numbers tell you what you want them to tell.
 |Benchmark                         |      (N)  | Mode  | Cnt |       Score |       Error | Units |
 | -------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
 |TransformersTest.groovyTransformer|  10000000 | avgt  | 10  |     442.675 |±     1.631  | ns/op |
-|TransformersTest.jsTransformer    |  10000000 | avgt  | 10  | 1691179.191 |± 78341.136  | ns/op |
+|TransformersTest.jsTransformer    |  10000000 | avgt  | 10  |     150.457 |±    11.876  | ns/op |
 |TransformersTest.pythonTransformer|  10000000 | avgt  | 10  |    1321.100 |±    13.768  | ns/op |
 
 

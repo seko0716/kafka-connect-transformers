@@ -30,6 +30,7 @@ public class GroovyTransformerTest {
         SourceRecord transformed = dateRouter.apply(new SourceRecord(null, null, "topic", 0, null, event));
         Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
         Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertEquals(2, stringObjectMap.size());
     }
 
     /*@Test(expected = ConfigException.class)

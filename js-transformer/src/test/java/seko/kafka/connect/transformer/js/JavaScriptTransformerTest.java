@@ -17,8 +17,8 @@ public class JavaScriptTransformerTest {
     @Before
     public void setUp() {
         config = new HashMap<>();
-        config.put(Configuration.KEY_SCRIPT_CONFIG, "source.qweqweq = 12312312; source;");
-        config.put(Configuration.VALUE_SCRIPT_CONFIG, "source.qweqweq = 12312312; source;");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "function keyTransform(source){ source.qweqweq = 12312312; return source;}");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "function valueTransform(source){ source.qweqweq = 12312312; return source;}");
     }
 
     @Test
@@ -30,6 +30,7 @@ public class JavaScriptTransformerTest {
         SourceRecord transformed = dateRouter.apply(new SourceRecord(null, null, "topic", 0, null, event));
         Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
         Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertEquals(2, stringObjectMap.size());
     }
 
     /*@Test(expected = ConfigException.class)
