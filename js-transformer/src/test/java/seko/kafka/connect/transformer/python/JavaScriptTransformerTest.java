@@ -10,15 +10,15 @@ import seko.kafka.connect.transformer.script.configs.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroovyTransformerTest {
-    private GroovyTransformer<SourceRecord> dateRouter = new GroovyTransformer<>();
+public class JavaScriptTransformerTest {
+    private JavaScriptTransformer<SourceRecord> dateRouter = new JavaScriptTransformer<>();
     private Map<String, Object> config;
 
     @Before
     public void setUp() {
         config = new HashMap<>();
-        config.put(Configuration.KEY_SCRIPT_CONFIG, "source.put('qweqweq', 12312312); return source;");
-        config.put(Configuration.VALUE_SCRIPT_CONFIG, "source.put('qweqweq', 12312312); return source;");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "source.qweqweq = 12312312; source;");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "source.qweqweq = 12312312; source;");
     }
 
     @Test

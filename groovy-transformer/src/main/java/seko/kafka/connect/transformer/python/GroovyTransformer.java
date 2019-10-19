@@ -20,8 +20,8 @@ import java.util.*;
 import static org.apache.kafka.common.config.ConfigDef.Importance.MEDIUM;
 import static org.apache.kafka.common.config.ConfigDef.NO_DEFAULT_VALUE;
 import static org.apache.kafka.common.config.ConfigDef.Type.STRING;
-import static seko.kafka.connect.transformer.python.configs.Configuration.KEY_SCRIPT_CONFIG;
-import static seko.kafka.connect.transformer.python.configs.Configuration.VALUE_SCRIPT_CONFIG;
+import static seko.kafka.connect.transformer.script.configs.Configuration.KEY_SCRIPT_CONFIG;
+import static seko.kafka.connect.transformer.script.configs.Configuration.VALUE_SCRIPT_CONFIG;
 
 public class GroovyTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
     private static final String PURPOSE = "field extraction";

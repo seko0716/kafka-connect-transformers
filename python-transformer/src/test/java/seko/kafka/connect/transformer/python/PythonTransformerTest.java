@@ -5,7 +5,7 @@ import org.apache.kafka.connect.transforms.util.Requirements;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import seko.kafka.connect.transformer.python.configs.Configuration;
+import seko.kafka.connect.transformer.script.configs.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +17,8 @@ public class PythonTransformerTest {
     @Before
     public void setUp() {
         config = new HashMap<>();
-        config.put(Configuration.KEY_SCRIPT_CONFIG, "def transform():\n" +
-                "  source['qweqweq'] = 12312312\n" +
-                "  return source");
-        config.put(Configuration.VALUE_SCRIPT_CONFIG, "def transform():\n" +
-                "  source['qweqweq'] = 12312312\n" +
-                "  return source");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
     }
 
     @Test

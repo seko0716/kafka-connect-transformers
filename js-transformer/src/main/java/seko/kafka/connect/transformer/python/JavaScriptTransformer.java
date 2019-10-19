@@ -5,12 +5,11 @@ import org.apache.kafka.connect.connector.ConnectRecord;
 import org.apache.kafka.connect.transforms.Transformation;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
-import org.python.core.PyCode;
-import org.python.core.PyObject;
-import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,14 +21,14 @@ import static org.apache.kafka.common.config.ConfigDef.Type.STRING;
 import static seko.kafka.connect.transformer.script.configs.Configuration.KEY_SCRIPT_CONFIG;
 import static seko.kafka.connect.transformer.script.configs.Configuration.VALUE_SCRIPT_CONFIG;
 
-public class PythonTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
+public class JavaScriptTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
     private static final String PURPOSE = "field extraction";
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Field name to extract.")
             .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Format extracted field.");
 
 
-    private static final Logger log = LoggerFactory.getLogger(PythonTransformer.class);
+    private static final Logger log = LoggerFactory.getLogger(JavaScriptTransformer.class);
 
     private String valueScript;
     private String keyScript;
@@ -39,25 +38,25 @@ public class PythonTransformer<R extends ConnectRecord<R>> implements Transforma
         Map<String, Object> key = Requirements.requireMapOrNull(record.key(), PURPOSE);
 
         if (keyScript != null && key != null) {
-            key = transform(key, keyScript);
+            key = groovyTransform(key, keyScript);
         }
 
         Map<String, Object> value = Requirements.requireMapOrNull(record.value(), PURPOSE);
         if (valueScript != null && value != null) {
-            value = transform(value, valueScript);
+            value = groovyTransform(value, valueScript);
         }
 
         return newRecord(record, key, value);
     }
 
-    private Map<String, Object> transform(Map<String, Object> source, String script) {
-        PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.set("source", source);
+    private Map<String, Object> groovyTransform(Map<String, Object> source, String script) {
+        ScriptEngineManager factory = new ScriptEngineManager();
+        // create a JavaScript engine
+        ScriptEngine engine = factory.getEngineByName("JavaScript");
+        engine.put("source", source);
 
         try {
-            PyCode compile = interpreter.compile(script);
-            PyObject pyObject = interpreter.eval(compile);
-            return (Map<String, Object>) pyObject.__tojava__(Map.class);
+            return (Map<String, Object>) engine.eval(script);
         } catch (Exception e) {
             List<String> tags = Optional.ofNullable(source.get("tags"))
                     .map(it -> (List<String>) it)

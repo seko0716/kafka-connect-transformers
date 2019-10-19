@@ -1,4 +1,4 @@
-package seko.kafka.connect.transformer.python.configs;
+package seko.kafka.connect.transformer.script.configs;
 
 public class Configuration {
     public static final String KEY_SCRIPT_CONFIG = "key.script";

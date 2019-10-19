@@ -11,6 +11,8 @@
     <modules>
         <module>groovy-transformer</module>
         <module>python-transformer</module>
+        <module>js-transformer</module>
+        <module>shared</module>
     </modules>
 
 

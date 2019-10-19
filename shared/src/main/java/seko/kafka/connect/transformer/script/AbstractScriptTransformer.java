@@ -1,20 +1,12 @@
-package seko.kafka.connect.transformer.python;
+package seko.kafka.connect.transformer.script;
 
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.ConnectRecord;
 import org.apache.kafka.connect.transforms.Transformation;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
-import org.python.core.PyCode;
-import org.python.core.PyObject;
-import org.python.util.PythonInterpreter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.apache.kafka.common.config.ConfigDef.Importance.MEDIUM;
 import static org.apache.kafka.common.config.ConfigDef.NO_DEFAULT_VALUE;
@@ -22,14 +14,11 @@ import static org.apache.kafka.common.config.ConfigDef.Type.STRING;
 import static seko.kafka.connect.transformer.script.configs.Configuration.KEY_SCRIPT_CONFIG;
 import static seko.kafka.connect.transformer.script.configs.Configuration.VALUE_SCRIPT_CONFIG;
 
-public class PythonTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
+public abstract class AbstractScriptTransformer<R extends ConnectRecord<R>> implements Transformation<R>, Transform {
     private static final String PURPOSE = "field extraction";
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
-            .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Field name to extract.")
-            .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Format extracted field.");
-
-
-    private static final Logger log = LoggerFactory.getLogger(PythonTransformer.class);
+            .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
+            .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for value transformation");
 
     private String valueScript;
     private String keyScript;
@@ -48,25 +37,6 @@ public class PythonTransformer<R extends ConnectRecord<R>> implements Transforma
         }
 
         return newRecord(record, key, value);
-    }
-
-    private Map<String, Object> transform(Map<String, Object> source, String script) {
-        PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.set("source", source);
-
-        try {
-            PyCode compile = interpreter.compile(script);
-            PyObject pyObject = interpreter.eval(compile);
-            return (Map<String, Object>) pyObject.__tojava__(Map.class);
-        } catch (Exception e) {
-            List<String> tags = Optional.ofNullable(source.get("tags"))
-                    .map(it -> (List<String>) it)
-                    .orElse(new ArrayList<>());
-            tags.add("groovy_transformer: " + e.getMessage());
-            source.put("tags", tags);
-            log.warn("Fallout groovy script evaluation: ", e);
-            return source;
-        }
     }
 
     @Override
