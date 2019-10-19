@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import seko.kafka.connect.transformer.script.AbstractScriptTransformer;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.*;
 
 public class GroovyTransformer<R extends ConnectRecord<R>> extends AbstractScriptTransformer<R> {
@@ -65,7 +68,10 @@ public class GroovyTransformer<R extends ConnectRecord<R>> extends AbstractScrip
         CompilerConfiguration conf = new CompilerConfiguration();
         SecureASTCustomizer customizer = new SecureASTCustomizer();
         List<String> receiversBlackList = Arrays.asList(
-                System.class.getName()
+                System.class.getName(),
+                File.class.getName(),
+                Path.class.getName(),
+                InputStream.class.getName()
         );
         customizer.setReceiversBlackList(receiversBlackList);
         conf.addCompilationCustomizers(customizer);
