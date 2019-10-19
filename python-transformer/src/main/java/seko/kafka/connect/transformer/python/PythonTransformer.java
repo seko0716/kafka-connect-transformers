@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class PythonTransformer<R extends ConnectRecord<R>> extends AbstractScriptTransformer {
+public class PythonTransformer<R extends ConnectRecord<R>> extends AbstractScriptTransformer<R> {
     private static final Logger log = LoggerFactory.getLogger(PythonTransformer.class);
 
 
