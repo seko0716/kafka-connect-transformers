@@ -13,6 +13,7 @@
         <module>python-transformer</module>
         <module>js-transformer</module>
         <module>shared</module>
+        <module>performance-test</module>
     </modules>
 
 
