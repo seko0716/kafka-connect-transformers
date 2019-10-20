@@ -14,6 +14,7 @@
         <module>js-transformer</module>
         <module>shared</module>
         <module>performance-test</module>
+        <module>groovy-script-engine-transformer</module>
     </modules>
 
 

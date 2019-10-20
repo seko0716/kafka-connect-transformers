@@ -35,13 +35,23 @@ supported languages:
 }
 ```
 
+### groovy script engine
+```json
+{
+  "transforms": "groovyEsTransform",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovySeTransformer",
+  "transforms.groovyTransform.key.script": "def keyTransform(def source) {source.put('qweqweq', 12312312); return source; }",
+  "transforms.groovyTransform.value.script": "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }"
+}
+```
+
 ### python
 ```json
 {
   "transforms": "pythonTransform",
   "transforms.groovyTransform.type": "seko.kafka.connect.transformer.python.PythonTransformer",
-  "transforms.groovyTransform.key.script": "source['qweqweq'] = 12312312; source",
-  "transforms.groovyTransform.value.script": "source['qweqweq'] = 12312312; source"
+  "transforms.groovyTransform.key.script": "def keyTransform(source): source['qweqweq'] = 12312312; return source",
+  "transforms.groovyTransform.value.script": "def valueTransform(source): source['qweqweq'] = 12312312; return source"
 }
 ```
 
@@ -84,6 +94,10 @@ Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.pythonTransfor
   - (min, avg, max) = (662.980, 792.442, 985.057), stdev = 125.097
   - CI (99.9%): [603.314, 981.571] (assumes normal distribution)
 
+Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovySeTransformer":
+  - 124.776 ±(99.9%) 15.387 ns/op [Average]
+  - (min, avg, max) = (114.271, 124.776, 150.406), stdev = 10.178
+  - CI (99.9%): [109.389, 140.163] (assumes normal distribution)
 
 ##### Run complete. Total time: 00:10:06
 
@@ -96,10 +110,11 @@ Do not assume the numbers tell you what you want them to tell.
 
 
 
-|Benchmark                         |      (N)  | Mode  | Cnt |       Score |       Error | Units |
-| -------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
-|TransformersTest.groovyTransformer|  10000000 | avgt  | 10  |     442.675 |±     1.631  | ns/op |
-|TransformersTest.jsTransformer    |  10000000 | avgt  | 10  |     150.457 |±    11.876  | ns/op |
-|TransformersTest.pythonTransformer|  10000000 | avgt  | 10  |     792.442 |±   189.128  | ns/op |
+|Benchmark                           |      (N)  | Mode  | Cnt |       Score |       Error | Units |
+| ---------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
+|TransformersTest.groovyTransformer  |  10000000 | avgt  | 10  |     442.675 |±     1.631  | ns/op |
+|TransformersTest.groovySeTransformer|  10000000 | avgt  | 10  |     124.776 |±    15.387  | ns/op |
+|TransformersTest.jsTransformer      |  10000000 | avgt  | 10  |     150.457 |±    11.876  | ns/op |
+|TransformersTest.pythonTransformer  |  10000000 | avgt  | 10  |     792.442 |±   189.128  | ns/op |
 
 
