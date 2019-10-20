@@ -4,6 +4,7 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import groovy.transform.CompileStatic;
 import org.apache.kafka.connect.connector.ConnectRecord;
+import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer;
@@ -16,6 +17,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
+
+import static seko.kafka.connect.transformer.script.configs.Configuration.KEY_SCRIPT_CONFIG;
+import static seko.kafka.connect.transformer.script.configs.Configuration.VALUE_SCRIPT_CONFIG;
 
 public class GroovyTransformer<R extends ConnectRecord<R>> extends AbstractScriptTransformer<R> {
     private static final Logger log = LoggerFactory.getLogger(GroovyTransformer.class);
@@ -42,7 +46,7 @@ public class GroovyTransformer<R extends ConnectRecord<R>> extends AbstractScrip
             List<String> tags = Optional.ofNullable(source.get("tags"))
                     .map(it -> (List<String>) it)
                     .orElse(new ArrayList<>());
-            tags.add("groovy_transformer: " + e.getMessage());
+            tags.add(getScripEngineName() + "_transformer: " + e.getMessage());
             source.put("tags", tags);
             log.warn("Fallout groovy script evaluation: ", e);
             return source;
@@ -52,7 +56,16 @@ public class GroovyTransformer<R extends ConnectRecord<R>> extends AbstractScrip
 
     @Override
     public void configure(Map<String, ?> configs) {
-        super.configure(configs);
+        SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
+        String keyScript = config.getString(KEY_SCRIPT_CONFIG);
+        if (keyScript != null && !keyScript.trim().isEmpty()) {
+            this.keyScript = keyScript;
+        }
+        String valueScript = config.getString(VALUE_SCRIPT_CONFIG);
+        if (valueScript != null && !valueScript.trim().isEmpty()) {
+            this.valueScript = valueScript;
+        }
+
         if (this.keyScript != null) {
             this.groovyKeyScript = getScript(keyScript);
             this.keyScript = "keyScript";
@@ -82,5 +95,10 @@ public class GroovyTransformer<R extends ConnectRecord<R>> extends AbstractScrip
         GroovyShell shell = new GroovyShell(conf);
 
         return shell.parse(script);
+    }
+
+    @Override
+    public String getScripEngineName() {
+        return "groovy-sandbox";
     }
 }

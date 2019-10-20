@@ -5,8 +5,17 @@ import org.apache.kafka.connect.connector.ConnectRecord;
 import org.apache.kafka.connect.transforms.Transformation;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.kafka.common.config.ConfigDef.Importance.MEDIUM;
 import static org.apache.kafka.common.config.ConfigDef.NO_DEFAULT_VALUE;
@@ -15,13 +24,15 @@ import static seko.kafka.connect.transformer.script.configs.Configuration.KEY_SC
 import static seko.kafka.connect.transformer.script.configs.Configuration.VALUE_SCRIPT_CONFIG;
 
 public abstract class AbstractScriptTransformer<R extends ConnectRecord<R>> implements Transformation<R>, Transform {
-    protected static final String PURPOSE = "field extraction";
-    private static final ConfigDef CONFIG_DEF = new ConfigDef()
+    protected static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
             .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for value transformation");
+    protected static final String PURPOSE = "field extraction";
+    private static final Logger log = LoggerFactory.getLogger(AbstractScriptTransformer.class);
 
     protected String valueScript;
     protected String keyScript;
+    private Invocable inv;
 
     @Override
     public R apply(R record) {
@@ -37,6 +48,31 @@ public abstract class AbstractScriptTransformer<R extends ConnectRecord<R>> impl
         }
 
         return newRecord(record, key, value);
+    }
+
+    @Override
+    public Map<String, Object> transform(Map<String, Object> source, String script) {
+        if (this.keyScript != null) {
+            return tryTransform(source, "keyTransform");
+        }
+        if (this.valueScript != null) {
+            return tryTransform(source, "valueTransform");
+        }
+        return source;
+    }
+
+    private Map<String, Object> tryTransform(Map<String, Object> source, String methodName) {
+        try {
+            return (Map<String, Object>) inv.invokeFunction(methodName, source);
+        } catch (Exception e) {
+            List<String> tags = Optional.ofNullable(source.get("tags"))
+                    .map(it -> (List<String>) it)
+                    .orElse(new ArrayList<>());
+            tags.add(getScripEngineName() + "_transformer: " + e.getMessage());
+            source.put("tags", tags);
+            log.warn("Fallout {} script evaluation: ", getScripEngineName(), e);
+            return source;
+        }
     }
 
     @Override
@@ -68,6 +104,30 @@ public abstract class AbstractScriptTransformer<R extends ConnectRecord<R>> impl
         String valueScript = config.getString(VALUE_SCRIPT_CONFIG);
         if (valueScript != null && !valueScript.trim().isEmpty()) {
             this.valueScript = valueScript;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (this.keyScript != null) {
+            stringBuilder.append(keyScript);
+        }
+        stringBuilder.append("\n");
+
+        if (this.valueScript != null) {
+            stringBuilder.append(valueScript);
+        }
+        this.inv = (Invocable) getScript(stringBuilder.toString());
+
+    }
+
+    private ScriptEngine getScript(String script) {
+        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName(getScripEngineName());
+        try {
+            scriptEngine.eval(script);
+            return scriptEngine;
+        } catch (ScriptException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
