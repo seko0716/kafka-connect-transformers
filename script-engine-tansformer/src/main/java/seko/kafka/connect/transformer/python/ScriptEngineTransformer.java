@@ -3,7 +3,6 @@ package seko.kafka.connect.transformer.python;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.ConnectRecord;
 import org.apache.kafka.connect.transforms.Transformation;
-import org.apache.kafka.connect.transforms.util.Requirements;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +26,10 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
             .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for value transformation")
-            .define(SCRIP_ENGINE_NAME, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation");
+            .define(SCRIP_ENGINE_NAME, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
+            .define(FIELD_FOR_EXCEPTION, STRING, FIELD_FOR_EXCEPTION_DEFAULT, MEDIUM, "Field for exception");
 
-    private static final String PURPOSE = "field extraction";
-
+    private String fieldForException;
     private String valueScript;
     private String keyScript;
     private Invocable inv;
@@ -38,43 +37,35 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
 
     @Override
     public R apply(R record) {
-        Map<String, Object> key = Requirements.requireMapOrNull(record.key(), PURPOSE);
-
+        Object key = record.key();
         if (keyScript != null && key != null) {
-            key = transform(key, keyScript);
+            key = tryTransform(key, "keyTransform");
         }
 
-        Map<String, Object> value = Requirements.requireMapOrNull(record.value(), PURPOSE);
+        Object value = record.value();
         if (valueScript != null && value != null) {
-            value = transform(value, valueScript);
+            value = tryTransform(value, "valueTransform");
         }
 
         return newRecord(record, key, value);
-    }
-
-    public Map<String, Object> transform(Map<String, Object> source, String script) {
-        if (this.keyScript != null) {
-            return tryTransform(source, "keyTransform");
-        }
-        if (this.valueScript != null) {
-            return tryTransform(source, "valueTransform");
-        }
-        return source;
     }
 
     public String getScripEngineName() {
         return scriptEngineName;
     }
 
-    private Map<String, Object> tryTransform(Map<String, Object> source, String methodName) {
+    private Object tryTransform(Object source, String methodName) {
         try {
-            return (Map<String, Object>) inv.invokeFunction(methodName, source);
+            return inv.invokeFunction(methodName, source);
         } catch (Exception e) {
-            List<String> tags = Optional.ofNullable(source.get("tags"))
-                    .map(it -> (List<String>) it)
-                    .orElse(new ArrayList<>());
-            tags.add(getScripEngineName() + "_transformer: " + e.getMessage());
-            source.put("tags", tags);
+            if (fieldForException != null && !fieldForException.isEmpty() && source instanceof Map) {
+                Map sourceMap = (Map) source;
+                List<String> tags = Optional.ofNullable(sourceMap.get(fieldForException))
+                        .map(it -> (List<String>) it)
+                        .orElse(new ArrayList<>());
+                tags.add(getScripEngineName() + "_transformer: " + e.getMessage());
+                sourceMap.put("tags", tags);
+            }
             log.warn("Fallout {} script evaluation: ", getScripEngineName(), e);
             return source;
         }
@@ -85,8 +76,7 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
         return CONFIG_DEF;
     }
 
-
-    private R newRecord(R record, Map<String, Object> newKey, Map<String, Object> newValue) {
+    private R newRecord(R record, Object newKey, Object newValue) {
         Object key = newKey == null ? record.key() : newKey;
         Object value = newValue == null ? record.value() : newValue;
 
@@ -103,6 +93,7 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
     public void configure(Map<String, ?> configs) {
         SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
         this.scriptEngineName = config.getString(SCRIP_ENGINE_NAME);
+        this.fieldForException = config.getString(FIELD_FOR_EXCEPTION);
         String keyScript = config.getString(KEY_SCRIPT_CONFIG);
         if (keyScript != null && !keyScript.trim().isEmpty()) {
             this.keyScript = keyScript;

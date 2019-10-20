@@ -40,7 +40,7 @@ supported languages:
 {
   "transforms": "groovyEsTransform",
   "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovySeTransformer",
-  "transforms.groovyTransform.key.script": "def keyTransform(def source) {source.put('qweqweq', 12312312); return source; }",
+  "transforms.groovyTransform.key.script": "def keyTransform(def source) {return source + '123' }",
   "transforms.groovyTransform.value.script": "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }"
 }
 ```
@@ -80,24 +80,24 @@ supported languages:
 ###### Parameters: (N = 10000000)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovyTransformer":
-  - 442.675 ±(99.9%) 1.631 ns/op [Average]
-  - (min, avg, max) = (440.508, 442.675, 444.009), stdev = 1.079s
-  - CI (99.9%): [441.044, 444.306] (assumes normal distribution)
+  - 471.638 ±(99.9%) 21.454 ns/op [Average]
+  - (min, avg, max) = (457.382, 471.638, 493.197), stdev = 14.190
+  - CI (99.9%): [450.184, 493.091] (assumes normal distribution)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.jsTransformer":
-  - 150.457 ±(99.9%) 11.876 ns/op [Average]
-  - (min, avg, max) = (140.812, 150.457, 166.440), stdev = 7.856
-  - CI (99.9%): [138.580, 162.333] (assumes normal distribution)
+  - 173.391 ±(99.9%) 5.602 ns/op [Average]
+  - (min, avg, max) = (169.248, 173.391, 177.589), stdev = 3.705
+  - CI (99.9%): [167.788, 178.993] (assumes normal distribution)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.pythonTransformer":
-  - 792.442 ±(99.9%) 189.128 ns/op [Average]
-  - (min, avg, max) = (662.980, 792.442, 985.057), stdev = 125.097
-  - CI (99.9%): [603.314, 981.571] (assumes normal distribution)
+  - 688.370 ±(99.9%) 15.014 ns/op [Average]
+  - (min, avg, max) = (676.190, 688.370, 709.107), stdev = 9.931
+  - CI (99.9%): [673.356, 703.385] (assumes normal distribution)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovySeTransformer":
-  - 124.776 ±(99.9%) 15.387 ns/op [Average]
-  - (min, avg, max) = (114.271, 124.776, 150.406), stdev = 10.178
-  - CI (99.9%): [109.389, 140.163] (assumes normal distribution)
+  - 125.317 ±(99.9%) 8.525 ns/op [Average]
+  - (min, avg, max) = (119.522, 125.317, 131.116), stdev = 5.639
+  - CI (99.9%): [116.792, 133.842] (assumes normal distribution)
 
 ##### Run complete. Total time: 00:10:06
 
@@ -112,9 +112,9 @@ Do not assume the numbers tell you what you want them to tell.
 
 |Benchmark                           |      (N)  | Mode  | Cnt |       Score |       Error | Units |
 | ---------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
-|TransformersTest.groovyTransformer  |  10000000 | avgt  | 10  |     442.675 |±     1.631  | ns/op |
-|TransformersTest.groovySeTransformer|  10000000 | avgt  | 10  |     124.776 |±    15.387  | ns/op |
-|TransformersTest.jsTransformer      |  10000000 | avgt  | 10  |     150.457 |±    11.876  | ns/op |
-|TransformersTest.pythonTransformer  |  10000000 | avgt  | 10  |     792.442 |±   189.128  | ns/op |
+|TransformersTest.groovyTransformer  |  10000000 | avgt  | 10  |     471.638 |±    21.454  | ns/op |
+|TransformersTest.groovySeTransformer|  10000000 | avgt  | 10  |     125.317 |±     8.525  | ns/op |
+|TransformersTest.jsTransformer      |  10000000 | avgt  | 10  |     173.391 |±     5.602  | ns/op |
+|TransformersTest.pythonTransformer  |  10000000 | avgt  | 10  |     688.370 |±    15.014  | ns/op |
 
 

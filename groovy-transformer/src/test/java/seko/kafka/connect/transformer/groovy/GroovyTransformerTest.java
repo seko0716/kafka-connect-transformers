@@ -17,7 +17,7 @@ public class GroovyTransformerTest {
     @Before
     public void setUp() {
         config = new HashMap<>();
-        config.put(Configuration.KEY_SCRIPT_CONFIG, "source.put('qweqweq', 12312312); return source;");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "return source+123");
         config.put(Configuration.VALUE_SCRIPT_CONFIG, "source.put('qweqweq', 12312312); return source;");
     }
 
@@ -27,10 +27,12 @@ public class GroovyTransformerTest {
         Map<String, Object> event = new HashMap<>();
         event.put("created_when", "2019-05-31T00:17:00.188Z");
 
-        SourceRecord transformed = dateRouter.apply(new SourceRecord(null, null, "topic", 0, null, event));
+        SourceRecord record = new SourceRecord(null, null, "topic", 0, null, "key___", null, event);
+        SourceRecord transformed = dateRouter.apply(record);
         Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
         Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
         Assert.assertEquals(2, stringObjectMap.size());
+        Assert.assertEquals("key___123", transformed.key());
     }
 
     /*@Test(expected = ConfigException.class)
