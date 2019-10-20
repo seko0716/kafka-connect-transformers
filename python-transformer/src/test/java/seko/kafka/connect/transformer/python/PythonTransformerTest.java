@@ -17,8 +17,8 @@ public class PythonTransformerTest {
     @Before
     public void setUp() {
         config = new HashMap<>();
-        config.put(Configuration.KEY_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
-        config.put(Configuration.VALUE_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(source): source['qweqweq'] = 12312312; return source");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(source): source['qweqweq'] = 12312312; return source");
     }
 
     @Test

@@ -23,7 +23,7 @@ supported languages:
 {
   "transforms": "groovyTransform",
   "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
-  "transforms.groovyTransform.key.script": "source.put('qweqweq', 12312312); return source;",
+  "transforms.groovyTransform.key.script": "source.put('qweqweq', 12312312); return source;"
 }
 ```
 
@@ -80,9 +80,9 @@ Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.jsTransformer"
   - CI (99.9%): [138.580, 162.333] (assumes normal distribution)
 
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.pythonTransformer":
-  - 1321.100 ±(99.9%) 13.768 ns/op [Average]
-  - (min, avg, max) = (1309.414, 1321.100, 1332.275), stdev = 9.106
-  - CI (99.9%): [1307.332, 1334.867] (assumes normal distribution)
+  - 792.442 ±(99.9%) 189.128 ns/op [Average]
+  - (min, avg, max) = (662.980, 792.442, 985.057), stdev = 125.097
+  - CI (99.9%): [603.314, 981.571] (assumes normal distribution)
 
 
 ##### Run complete. Total time: 00:10:06
@@ -100,6 +100,6 @@ Do not assume the numbers tell you what you want them to tell.
 | -------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
 |TransformersTest.groovyTransformer|  10000000 | avgt  | 10  |     442.675 |±     1.631  | ns/op |
 |TransformersTest.jsTransformer    |  10000000 | avgt  | 10  |     150.457 |±    11.876  | ns/op |
-|TransformersTest.pythonTransformer|  10000000 | avgt  | 10  |    1321.100 |±    13.768  | ns/op |
+|TransformersTest.pythonTransformer|  10000000 | avgt  | 10  |     792.442 |±   189.128  | ns/op |
 
 

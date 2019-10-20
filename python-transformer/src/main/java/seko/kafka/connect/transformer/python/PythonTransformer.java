@@ -1,13 +1,14 @@
 package seko.kafka.connect.transformer.python;
 
 import org.apache.kafka.connect.connector.ConnectRecord;
-import org.python.core.PyCode;
-import org.python.core.PyObject;
-import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import seko.kafka.connect.transformer.script.AbstractScriptTransformer;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,27 +16,22 @@ import java.util.Optional;
 
 public class PythonTransformer<R extends ConnectRecord<R>> extends AbstractScriptTransformer<R> {
     private static final Logger log = LoggerFactory.getLogger(PythonTransformer.class);
-    private PyCode pythonValueScript;
-    private PyCode pythonKeyScript;
+    private Invocable inv;
 
 
     public Map<String, Object> transform(Map<String, Object> source, String script) {
-        if ("keyScript".equals(script)) {
-            return pythonTransform(source, pythonKeyScript);
+        if (this.keyScript != null) {
+            return pythonTransform(source, "keyTransform");
         }
-        if ("valueScript".equals(script)) {
-            return pythonTransform(source, pythonValueScript);
+        if (this.valueScript != null) {
+            return pythonTransform(source, "valueTransform");
         }
         return source;
     }
 
-    private Map<String, Object> pythonTransform(Map<String, Object> source, PyCode script) {
-        PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.set("source", source);
-
+    private Map<String, Object> pythonTransform(Map<String, Object> source, String methodName) {
         try {
-            PyObject pyObject = interpreter.eval(script);
-            return (Map<String, Object>) pyObject.__tojava__(Map.class);
+            return (Map<String, Object>) inv.invokeFunction(methodName, source);
         } catch (Exception e) {
             List<String> tags = Optional.ofNullable(source.get("tags"))
                     .map(it -> (List<String>) it)
@@ -47,24 +43,32 @@ public class PythonTransformer<R extends ConnectRecord<R>> extends AbstractScrip
         }
     }
 
-
     @Override
     public void configure(Map<String, ?> configs) {
         super.configure(configs);
-        PythonInterpreter interpreter = new PythonInterpreter();
+
+        StringBuilder stringBuilder = new StringBuilder();
+
         if (this.keyScript != null) {
-            this.pythonKeyScript = getScript(keyScript, interpreter);
-            this.keyScript = "keyScript";
+            stringBuilder.append(keyScript);
         }
+        stringBuilder.append("\n");
 
         if (this.valueScript != null) {
-            this.pythonValueScript = getScript(valueScript, interpreter);
-            this.valueScript = "valueScript";
+            stringBuilder.append(valueScript);
+        }
+        this.inv = (Invocable) getScript(stringBuilder.toString());
+
+    }
+
+    private ScriptEngine getScript(String script) {
+        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("python");
+        try {
+            scriptEngine.eval(script);
+            return scriptEngine;
+        } catch (ScriptException e) {
+            e.printStackTrace();
+            return null;
         }
     }
-
-    private PyCode getScript(String script, PythonInterpreter interpreter) {
-        return interpreter.compile(script);
-    }
-
 }
