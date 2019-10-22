@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import seko.kafka.connect.transformer.script.configs.Configuration;
 
+import javax.script.ScriptException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +66,7 @@ public class ScriptEngineTransformerTest {
         Assert.assertEquals("key___123", transformed.key());
     }
 
-    @Test
+    @Test(expected = ScriptException.class)
     public void applyWithoutSchemaJsSystemExit() {
         config.put(Configuration.SCRIP_ENGINE_NAME, "nashorn");
         config.put(Configuration.KEY_SCRIPT_CONFIG, "java.lang.System.exit(99); function keyTransform(source){ java.lang.System.exit(66); return source + '123'; }");
