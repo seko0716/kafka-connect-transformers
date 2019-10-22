@@ -7,10 +7,7 @@ import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,21 +27,21 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
             .define(FIELD_FOR_EXCEPTION, STRING, FIELD_FOR_EXCEPTION_DEFAULT, MEDIUM, "Field for exception");
 
     private String fieldForException;
-    private String valueScript;
-    private String keyScript;
-    private Invocable inv;
+    private CompiledScript valueScript;
+    private CompiledScript keyScript;
     private String scriptEngineName;
+    private ScriptEngine scriptEngine;
 
     @Override
     public R apply(R record) {
         Object key = record.key();
         if (keyScript != null && key != null) {
-            key = tryTransform(key, "keyTransform");
+            key = tryTransform(key, keyScript);
         }
 
         Object value = record.value();
         if (valueScript != null && value != null) {
-            value = tryTransform(value, "valueTransform");
+            value = tryTransform(value, valueScript);
         }
 
         return newRecord(record, key, value);
@@ -54,9 +51,11 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
         return scriptEngineName;
     }
 
-    private Object tryTransform(Object source, String methodName) {
+    private Object tryTransform(Object source, CompiledScript script) {
         try {
-            return inv.invokeFunction(methodName, source);
+            SimpleBindings simpleBindings = new SimpleBindings();
+            simpleBindings.put("source", source);
+            return script.eval(simpleBindings);
         } catch (Exception e) {
             if (fieldForException != null && !fieldForException.isEmpty() && source instanceof Map) {
                 Map sourceMap = (Map) source;
@@ -93,34 +92,21 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
     public void configure(Map<String, ?> configs) {
         SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
         this.scriptEngineName = config.getString(SCRIP_ENGINE_NAME);
+        this.scriptEngine = new ScriptEngineManager().getEngineByName(getScripEngineName());
         this.fieldForException = config.getString(FIELD_FOR_EXCEPTION);
         String keyScript = config.getString(KEY_SCRIPT_CONFIG);
         if (keyScript != null && !keyScript.trim().isEmpty()) {
-            this.keyScript = keyScript;
+            this.keyScript = getScript(keyScript);
         }
         String valueScript = config.getString(VALUE_SCRIPT_CONFIG);
         if (valueScript != null && !valueScript.trim().isEmpty()) {
-            this.valueScript = valueScript;
+            this.valueScript = getScript(valueScript);
         }
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (this.keyScript != null) {
-            stringBuilder.append(keyScript);
-        }
-        stringBuilder.append("\n");
-
-        if (this.valueScript != null) {
-            stringBuilder.append(valueScript);
-        }
-        this.inv = (Invocable) getScript(stringBuilder.toString());
     }
 
-    private ScriptEngine getScript(String script) {
-        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName(getScripEngineName());
+    private CompiledScript getScript(String script) {
         try {
-            scriptEngine.eval(script);
-            return scriptEngine;
+            return ((Compilable) scriptEngine).compile(script);
         } catch (ScriptException e) {
             e.printStackTrace();
             return null;

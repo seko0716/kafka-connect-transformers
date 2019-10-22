@@ -26,8 +26,8 @@ public class ScriptEngineTransformerTest {
     @Test
     public void applyWithoutSchemaStringGroovy() {
         config.put(Configuration.SCRIP_ENGINE_NAME, "groovy");
-        config.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(def source) {return source + '123' }");
-        config.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(def source) {return source + '123' }; return keyTransform(source)");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }; return valueTransform(source)");
         transformer.configure(config);
 
         SourceRecord transformed = transformer.apply(record);

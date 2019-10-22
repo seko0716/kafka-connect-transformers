@@ -43,8 +43,8 @@ public class TransformersTest {
         groovyTransformer.configure(groovyConfig);
 
         groovySeConfig = new HashMap<>();
-        groovySeConfig.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(def source) {source.put('qweqweq', 12312312); return source; }");
-        groovySeConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }");
+        groovySeConfig.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(def source) {return source + '123' }; return keyTransform(source)");
+        groovySeConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }; return valueTransform(source)");
         groovySeConfig.put(Configuration.SCRIP_ENGINE_NAME, "groovy");
         scriptEngineTransformerGroovy.configure(groovySeConfig);
 
