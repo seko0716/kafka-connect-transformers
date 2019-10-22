@@ -2,6 +2,7 @@ package seko.kafka.connect.transformer.python;
 
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.connect.connector.ConnectRecord;
 import org.apache.kafka.connect.transforms.Transformation;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
@@ -120,6 +121,9 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
             scriptEngine = new NashornScriptEngineFactory().getScriptEngine("-strict", "--no-java", "--no-syntax-extensions");
         } else {
             scriptEngine = new ScriptEngineManager().getEngineByName(getScripEngineName());
+        }
+        if (scriptEngine == null) {
+            throw new ConfigException("Can not defined script engine");
         }
 
         try {
