@@ -13,7 +13,10 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.kafka.common.config.ConfigDef.Importance.MEDIUM;
 import static org.apache.kafka.common.config.ConfigDef.NO_DEFAULT_VALUE;
@@ -117,7 +120,7 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
 
     private ScriptEngine getScript(String script) {
         ScriptEngine scriptEngine;
-        if (Arrays.asList("nashorn", "javascript").contains(getScripEngineName().toLowerCase())) {
+        if (JS_SCRIPT_ENGINE_NAMES.contains(getScripEngineName().toLowerCase())) {
             scriptEngine = new NashornScriptEngineFactory().getScriptEngine("-strict", "--no-java", "--no-syntax-extensions");
         } else {
             scriptEngine = new ScriptEngineManager().getEngineByName(getScripEngineName());
