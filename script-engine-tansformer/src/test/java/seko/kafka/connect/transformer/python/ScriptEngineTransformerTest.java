@@ -66,6 +66,20 @@ public class ScriptEngineTransformerTest {
     }
 
     @Test
+    public void applyWithoutSchemaJsSystemExit() {
+        config.put(Configuration.SCRIP_ENGINE_NAME, "nashorn");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "java.lang.System.exit(99); function keyTransform(source){ java.lang.System.exit(66); return source + '123'; }");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "function valueTransform(source){ source.qweqweq = 12312312; return source;}");
+        transformer.configure(config);
+
+        SourceRecord transformed = transformer.apply(record);
+        Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
+        Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertEquals(2, stringObjectMap.size());
+        Assert.assertEquals("key___123", transformed.key());
+    }
+
+    @Test
     public void applyWithoutSchemaRuby() {
         config.put(Configuration.SCRIP_ENGINE_NAME, "jruby");
         config.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(source) return source + '123' end");
