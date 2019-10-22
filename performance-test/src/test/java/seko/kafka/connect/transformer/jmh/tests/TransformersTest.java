@@ -23,11 +23,13 @@ public class TransformersTest {
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerJs = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerGroovy = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerPython = new ScriptEngineTransformer<>();
+    private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerRuby = new ScriptEngineTransformer<>();
     private final GroovyTransformer<SourceRecord> groovyTransformer = new GroovyTransformer<>();
     private Map<String, Object> groovyConfig;
     private Map<String, Object> groovySeConfig;
     private Map<String, Object> jsConfig;
     private Map<String, Object> pythonConfig;
+    private Map<String, Object> rubyConfig;
     @Param({"10000000"})
     private int N;
     private Map<String, Object> event;
@@ -52,12 +54,17 @@ public class TransformersTest {
         jsConfig.put(Configuration.SCRIP_ENGINE_NAME, "JavaScript");
         scriptEngineTransformerJs.configure(jsConfig);
 
-
         pythonConfig = new HashMap<>();
         pythonConfig.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(source): source['qweqweq'] = 12312312; return source");
         pythonConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(source): source['qweqweq'] = 12312312; return source");
         pythonConfig.put(Configuration.SCRIP_ENGINE_NAME, "python");
         scriptEngineTransformerPython.configure(pythonConfig);
+
+        rubyConfig = new HashMap<>();
+        rubyConfig.put(Configuration.SCRIP_ENGINE_NAME, "jruby");
+        rubyConfig.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(source) return source + '123' end");
+        rubyConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "def valueTransform(source) source['qweqweq'] = 12312312; return source; end");
+        scriptEngineTransformerRuby.configure(rubyConfig);
 
         event = new HashMap<>();
         event.put("created_when", "2019-05-31T00:17:00.188Z");
@@ -90,9 +97,15 @@ public class TransformersTest {
         validate(transformed);
     }
 
+    @Benchmark
+    public void rubyTransformer() {
+        SourceRecord transformed = scriptEngineTransformerRuby.apply(topic);
+        validate(transformed);
+    }
+
     private void validate(SourceRecord transformed) {
         Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
-        Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertNotNull(stringObjectMap.get("qweqweq"));
         Assert.assertEquals(2, stringObjectMap.size());
     }
 }
