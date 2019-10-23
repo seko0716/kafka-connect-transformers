@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 //@Measurement(iterations = 8)
 public class TransformersTest {
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerJs = new ScriptEngineTransformer<>();
+    private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerKotlin = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerGroovy = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerPython = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerRuby = new ScriptEngineTransformer<>();
@@ -30,6 +31,7 @@ public class TransformersTest {
     private Map<String, Object> jsConfig;
     private Map<String, Object> pythonConfig;
     private Map<String, Object> rubyConfig;
+    private Map<String, Object> kotlinConfig;
     @Param({"10000000"})
     private int N;
     private Map<String, Object> event;
@@ -41,6 +43,12 @@ public class TransformersTest {
         groovyConfig.put(Configuration.KEY_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
         groovyConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
         groovyTransformer.configure(groovyConfig);
+
+        kotlinConfig = new HashMap<>();
+        kotlinConfig.put(Configuration.SCRIP_ENGINE_NAME, "kotlin");
+        kotlinConfig.put(Configuration.KEY_SCRIPT_CONFIG, "fun keyTransform(source: String): String { return source + \"123\"}");
+        kotlinConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "fun valueTransform(source: MutableMap<String, Any>): Map<String, Any> { source[\"qweqweq\"] = 12312312; return source }");
+        scriptEngineTransformerKotlin.configure(kotlinConfig);
 
         groovySeConfig = new HashMap<>();
         groovySeConfig.put(Configuration.KEY_SCRIPT_CONFIG, "def keyTransform(def source) {source.put('qweqweq', 12312312); return source; }");
@@ -72,6 +80,11 @@ public class TransformersTest {
         topic = new SourceRecord(null, null, "topic", 0, null, event);
     }
 
+    @Benchmark
+    public void kotlinTransformer() {
+        SourceRecord transformed = scriptEngineTransformerKotlin.apply(topic);
+        validate(transformed);
+    }
 
     @Benchmark
     public void groovyTransformer() {

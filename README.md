@@ -38,30 +38,53 @@ supported languages:
 ### groovy script engine
 ```json
 {
-  "transforms": "groovyEsTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovySeTransformer",
-  "transforms.groovyTransform.key.script": "def keyTransform(def source) {return source + '123' }",
-  "transforms.groovyTransform.value.script": "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }"
+  "transforms": "ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.scrip_engine_name": "groovy",
+  "transforms.ScriptEngineTransformer.key.script": "def keyTransform(def source) {return source + '123' }",
+  "transforms.ScriptEngineTransformer.value.script": "def valueTransform(def source) {source.put('qweqweq', 12312312); return source; }"
 }
 ```
 
 ### python
 ```json
 {
-  "transforms": "pythonTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
-  "transforms.groovyTransform.key.script": "def keyTransform(source): source['qweqweq'] = 12312312; return source",
-  "transforms.groovyTransform.value.script": "def valueTransform(source): source['qweqweq'] = 12312312; return source"
+  "transforms": "ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.scrip_engine_name": "python",
+  "transforms.ScriptEngineTransformer.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.key.script": "def keyTransform(source): source['qweqweq'] = 12312312; return source",
+  "transforms.ScriptEngineTransformer.value.script": "def valueTransform(source): source['qweqweq'] = 12312312; return source"
 }
 ```
 
 ### java script
 ```json
 {
-  "transforms": "jsTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.js.JavaScriptTransformer",
-  "transforms.groovyTransform.key.script": "function keyTransform(source){ source.qweqweq = 12312312; return source;}",
-  "transforms.groovyTransform.value.script": "function valueTransform(source){ source.qweqweq = 12312312; return source;}"
+  "transforms": "ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.scrip_engine_name": "javascript",
+  "transforms.ScriptEngineTransformer.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.key.script": "function keyTransform(source){ source.qweqweq = 12312312; return source;}",
+  "transforms.ScriptEngineTransformer.value.script": "function valueTransform(source){ source.qweqweq = 12312312; return source;}"
+}
+```
+### ruby
+```json
+{
+  "transforms": "ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.scrip_engine_name": "jruby",
+  "transforms.ScriptEngineTransformer.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.key.script": "def keyTransform(source) return source + '123' end",
+  "transforms.ScriptEngineTransformer.value.script": "def valueTransform(source) source['qweqweq'] = 12312312; return source; end"
+}
+```
+### kotlin
+```json
+{
+  "transforms": "ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.scrip_engine_name": "kotlin",
+  "transforms.ScriptEngineTransformer.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
+  "transforms.ScriptEngineTransformer.key.script": "fun keyTransform(source: String): String { return source + \"123\"}",
+  "transforms.ScriptEngineTransformer.value.script": "fun valueTransform(source: MutableMap<String, Any>): Map<String, Any> { source[\"qweqweq\"] = 12312312; return source }"
 }
 ```
 
@@ -112,9 +135,11 @@ Do not assume the numbers tell you what you want them to tell.
 
 |Benchmark                           |      (N)  | Mode  | Cnt |       Score |       Error | Units |
 | ---------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
-|TransformersTest.groovyTransformer  |  10000000 | avgt  | 10  |     471.638 |±    21.454  | ns/op |
 |TransformersTest.groovySeTransformer|  10000000 | avgt  | 10  |     125.317 |±     8.525  | ns/op |
 |TransformersTest.jsTransformer      |  10000000 | avgt  | 10  |     173.391 |±     5.602  | ns/op |
+|TransformersTest.groovyTransformer  |  10000000 | avgt  | 10  |     471.638 |±    21.454  | ns/op |
 |TransformersTest.pythonTransformer  |  10000000 | avgt  | 10  |     688.370 |±    15.014  | ns/op |
+|TransformersTest.kotlinTransformer  |  10000000 | avgt  | 10  |    2833.001 |±    44.396  | ns/op |
+|TransformersTest.rubyTransformer    |  10000000 | avgt  | 10  |  101496.807 |±  3020.123  | ns/op |
 
 

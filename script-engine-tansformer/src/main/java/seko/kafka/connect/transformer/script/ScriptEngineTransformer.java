@@ -26,8 +26,8 @@ import static seko.kafka.connect.transformer.script.configs.Configuration.*;
 public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
     private static final Logger log = LoggerFactory.getLogger(ScriptEngineTransformer.class);
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
-            .define(KEY_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
-            .define(VALUE_SCRIPT_CONFIG, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for value transformation")
+            .define(KEY_SCRIPT_CONFIG, STRING, null, MEDIUM, "Script for key transformation")
+            .define(VALUE_SCRIPT_CONFIG, STRING, null, MEDIUM, "Script for value transformation")
             .define(SCRIP_ENGINE_NAME, STRING, NO_DEFAULT_VALUE, MEDIUM, "Script for key transformation")
             .define(FIELD_FOR_EXCEPTION, STRING, FIELD_FOR_EXCEPTION_DEFAULT, MEDIUM, "Field for exception");
 

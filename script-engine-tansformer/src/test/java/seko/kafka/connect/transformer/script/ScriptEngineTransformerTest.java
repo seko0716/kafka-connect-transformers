@@ -81,6 +81,21 @@ public class ScriptEngineTransformerTest {
     }
 
 
+    @Test
+    public void applyWithoutSchemaKotlin() {
+        config.put(Configuration.SCRIP_ENGINE_NAME, "kotlin");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "fun keyTransform(source: String): String { return source + \"123\"}");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "fun valueTransform(source: MutableMap<String, Any>): Map<String, Any> { source[\"qweqweq\"] = 12312312; return source }");
+        transformer.configure(config);
+
+        SourceRecord transformed = transformer.apply(record);
+        Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
+        Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertEquals(2, stringObjectMap.size());
+        Assert.assertEquals("key___123", transformed.key());
+    }
+
+
     @Test(expected = ConfigException.class)
     public void applyWithoutSchemaJsConfigFail() {
         config.put(Configuration.SCRIP_ENGINE_NAME, "JavaScript");
