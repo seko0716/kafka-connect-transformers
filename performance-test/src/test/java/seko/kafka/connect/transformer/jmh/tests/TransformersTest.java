@@ -6,7 +6,7 @@ import org.apache.kafka.connect.transforms.util.Requirements;
 import org.junit.Assert;
 import org.openjdk.jmh.annotations.*;
 import seko.kafka.connect.transformer.groovy.GroovyTransformer;
-import seko.kafka.connect.transformer.python.ScriptEngineTransformer;
+import seko.kafka.connect.transformer.script.ScriptEngineTransformer;
 import seko.kafka.connect.transformer.script.configs.Configuration;
 
 import java.util.HashMap;

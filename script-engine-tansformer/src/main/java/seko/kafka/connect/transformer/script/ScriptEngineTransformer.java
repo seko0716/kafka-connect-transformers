@@ -1,4 +1,4 @@
-package seko.kafka.connect.transformer.python;
+package seko.kafka.connect.transformer.script;
 
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.kafka.common.config.ConfigDef;
@@ -133,8 +133,7 @@ public class ScriptEngineTransformer<R extends ConnectRecord<R>> implements Tran
             scriptEngine.eval(script);
             return scriptEngine;
         } catch (ScriptException e) {
-            e.printStackTrace();
-            return null;
+            throw new ConfigException("Invalid script");
         }
     }
 }

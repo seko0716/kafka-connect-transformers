@@ -1,5 +1,6 @@
-package seko.kafka.connect.transformer.python;
+package seko.kafka.connect.transformer.script;
 
+import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.junit.Assert;
@@ -77,6 +78,35 @@ public class ScriptEngineTransformerTest {
         Assert.assertEquals(12312312L, stringObjectMap.get("qweqweq"));
         Assert.assertEquals(2, stringObjectMap.size());
         Assert.assertEquals("key___123", transformed.key());
+    }
+
+
+    @Test(expected = ConfigException.class)
+    public void applyWithoutSchemaJsConfigFail() {
+        config.put(Configuration.SCRIP_ENGINE_NAME, "JavaScript");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "java.lang.System.exit(9);function keyTransform(source){ return source + '123'; }");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "function valueTransform(source){ source.qweqweq = 12312312; return source;}");
+        transformer.configure(config);
+
+        SourceRecord transformed = transformer.apply(record);
+        Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
+        Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertEquals(2, stringObjectMap.size());
+        Assert.assertEquals("key___123", transformed.key());
+    }
+
+    @Test
+    public void applyWithoutSchemaJsFail() {
+        config.put(Configuration.SCRIP_ENGINE_NAME, "JavaScript");
+        config.put(Configuration.KEY_SCRIPT_CONFIG, "function keyTransform(source){ java.lang.System.exit(9); return source + '123'; }");
+        config.put(Configuration.VALUE_SCRIPT_CONFIG, "function valueTransform(source){ source.qweqweq = 12312312; return source;}");
+        transformer.configure(config);
+
+        SourceRecord transformed = transformer.apply(record);
+        Map<String, Object> stringObjectMap = Requirements.requireMapOrNull(transformed.value(), "");
+        Assert.assertEquals(12312312, stringObjectMap.get("qweqweq"));
+        Assert.assertEquals(2, stringObjectMap.size());
+        Assert.assertEquals("key___", transformed.key());
     }
 
     /*@Test(expected = ConfigException.class)

@@ -49,7 +49,7 @@ supported languages:
 ```json
 {
   "transforms": "pythonTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.python.ScriptEngineTransformer",
+  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.script.ScriptEngineTransformer",
   "transforms.groovyTransform.key.script": "def keyTransform(source): source['qweqweq'] = 12312312; return source",
   "transforms.groovyTransform.value.script": "def valueTransform(source): source['qweqweq'] = 12312312; return source"
 }
