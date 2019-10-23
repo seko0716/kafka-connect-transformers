@@ -4,6 +4,8 @@ supported languages:
 * Groovy
 * JavaScript
 * Python
+* Jruby
+* Kotlin
 
 # Configuration
 
