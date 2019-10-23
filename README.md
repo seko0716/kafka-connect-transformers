@@ -123,6 +123,11 @@ Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovySeTransf
   - 125.317 ±(99.9%) 8.525 ns/op [Average]
   - (min, avg, max) = (119.522, 125.317, 131.116), stdev = 5.639
   - CI (99.9%): [116.792, 133.842] (assumes normal distribution)
+  
+Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.rubyTransformer":
+  - 101496.807 ±(99.9%) 3020.123 ns/op [Average]
+  - (min, avg, max) = (99087.414, 101496.807, 105133.209), stdev = 1997.624
+  - CI (99.9%): [98476.684, 104516.929] (assumes normal distribution)
 
 ##### Run complete. Total time: 00:10:06
 
