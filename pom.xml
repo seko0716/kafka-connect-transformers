@@ -9,7 +9,6 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>groovy-transformer</module>
         <module>shared</module>
         <module>performance-test</module>
         <module>script-engine-tansformer</module>

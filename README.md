@@ -1,5 +1,9 @@
 # Kafka script transformers
 
+The project is a sample and example of a kafka-connect transformers. 
+
+The kafka transformer for applying custom scripts to kafka record (key and value). kafka scheme not using.
+
 supported languages:
 * Groovy
 * JavaScript
@@ -7,37 +11,15 @@ supported languages:
 * Jruby
 * Kotlin
 
+JavaScript language is the only of supported languages, which have restrictions to call java API. JavaScript can't execute code System.exit() File.delete and others.
+
+It is recommended to use JavaScript language, because it is optimal by performance and security.
+
 # Configuration
 
 ## Examples:
 
 ### groovy
-```json
-{
-  "transforms": "groovyTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
-  "transforms.groovyTransform.key.script": "source.put('qweqweq', 12312312); return source;",
-  "transforms.groovyTransform.value.script": "source.put('qweqweq', 12312312); return source;"
-}
-```
-
-```json
-{
-  "transforms": "groovyTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
-  "transforms.groovyTransform.key.script": "source.put('qweqweq', 12312312); return source;"
-}
-```
-
-```json
-{
-  "transforms": "groovyTransform",
-  "transforms.groovyTransform.type": "seko.kafka.connect.transformer.groovy.GroovyTransformer",
-  "transforms.groovyTransform.value.script": "source.put('qweqweq', 12312312); return source;"
-}
-```
-
-### groovy script engine
 ```json
 {
   "transforms": "ScriptEngineTransformer",
@@ -90,7 +72,7 @@ supported languages:
 }
 ```
 
-# JMH results
+# JMH test results
 
 ###### JMH version: 1.21
 ###### VM version: JDK 1.8.0_222, OpenJDK 64-Bit Server VM, 25.222-b05
