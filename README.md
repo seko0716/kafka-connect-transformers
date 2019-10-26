@@ -86,6 +86,11 @@ It is recommended to use JavaScript language, because it is optimal by performan
 ###### Benchmark: seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovyTransformer
 ###### Parameters: (N = 10000000)
 
+Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.javaTransformer":
+  - 51.584 ±(99.9%) 0.470 ns/op [Average]
+  - (min, avg, max) = (51.151, 51.584, 52.191), stdev = 0.311
+  - CI (99.9%): [51.113, 52.054] (assumes normal distribution)
+
 Result "seko.kafka.connect.transformer.jmh.tests.TransformersTest.groovyTransformer":
   - 471.638 ±(99.9%) 21.454 ns/op [Average]
   - (min, avg, max) = (457.382, 471.638, 493.197), stdev = 14.190
@@ -124,6 +129,7 @@ Do not assume the numbers tell you what you want them to tell.
 
 |Benchmark                           |      (N)  | Mode  | Cnt |       Score |       Error | Units |
 | ---------------------------------- | --------- | ----- | --- | ----------- | ----------- | ----- |
+|TransformersTest.javaTransformer    |  10000000 | avgt  | 10  |      51.584 |±     0.470  | ns/op |
 |TransformersTest.groovySeTransformer|  10000000 | avgt  | 10  |     125.317 |±     8.525  | ns/op |
 |TransformersTest.jsTransformer      |  10000000 | avgt  | 10  |     173.391 |±     5.602  | ns/op |
 |TransformersTest.groovyTransformer  |  10000000 | avgt  | 10  |     471.638 |±    21.454  | ns/op |

@@ -5,7 +5,6 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.junit.Assert;
 import org.openjdk.jmh.annotations.*;
-import seko.kafka.connect.transformer.groovy.GroovyTransformer;
 import seko.kafka.connect.transformer.script.ScriptEngineTransformer;
 import seko.kafka.connect.transformer.script.configs.Configuration;
 
@@ -20,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 //@Warmup(iterations = 3)
 //@Measurement(iterations = 8)
 public class TransformersTest {
+    private final JavaTransformer<SourceRecord> javaTransformer = new JavaTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerJs = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerKotlin = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerGroovy = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerPython = new ScriptEngineTransformer<>();
     private final ScriptEngineTransformer<SourceRecord> scriptEngineTransformerRuby = new ScriptEngineTransformer<>();
-    private final GroovyTransformer<SourceRecord> groovyTransformer = new GroovyTransformer<>();
-    private Map<String, Object> groovyConfig;
+
     private Map<String, Object> groovySeConfig;
     private Map<String, Object> jsConfig;
     private Map<String, Object> pythonConfig;
@@ -39,10 +38,6 @@ public class TransformersTest {
 
     @Setup
     public void setup() {
-        groovyConfig = new HashMap<>();
-        groovyConfig.put(Configuration.KEY_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
-        groovyConfig.put(Configuration.VALUE_SCRIPT_CONFIG, "source['qweqweq'] = 12312312; source");
-        groovyTransformer.configure(groovyConfig);
 
         kotlinConfig = new HashMap<>();
         kotlinConfig.put(Configuration.SCRIP_ENGINE_NAME, "kotlin");
@@ -87,8 +82,8 @@ public class TransformersTest {
     }
 
     @Benchmark
-    public void groovyTransformer() {
-        SourceRecord transformed = groovyTransformer.apply(topic);
+    public void javaTransformer() {
+        SourceRecord transformed = javaTransformer.apply(topic);
         validate(transformed);
     }
 
